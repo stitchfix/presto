@@ -28,6 +28,15 @@ public final class FragmentTableScanCounter
 {
     private FragmentTableScanCounter() {}
 
+    public static int countSources(PlanNode... nodes)
+    {
+        int count = 0;
+        for (PlanNode node : nodes) {
+            count += node.accept(new Visitor(), null);
+        }
+        return count;
+    }
+
     public static boolean hasMultipleSources(PlanNode... nodes)
     {
         int count = 0;

@@ -104,6 +104,7 @@ import static com.facebook.presto.sql.ExpressionUtils.extractConjuncts;
 import static com.facebook.presto.sql.ExpressionUtils.stripDeterministicConjuncts;
 import static com.facebook.presto.sql.ExpressionUtils.stripNonDeterministicConjuncts;
 import static com.facebook.presto.sql.analyzer.ExpressionAnalyzer.getExpressionTypes;
+import static com.facebook.presto.sql.planner.FragmentTableScanCounter.countSources;
 import static com.facebook.presto.sql.planner.FragmentTableScanCounter.hasMultipleSources;
 import static com.facebook.presto.sql.planner.PartitioningScheme.Replication.REPLICATE_NULLS_AND_ANY;
 import static com.facebook.presto.sql.planner.SystemPartitioningHandle.FIXED_ARBITRARY_DISTRIBUTION;
@@ -1094,7 +1095,7 @@ public class AddExchanges
             // children partitioning and don't GATHER partitioned inputs
             if (!parentGlobal.isPresent() || parentGlobal.get().isDistributed()) {
                 if (!partitionedChildren.isEmpty() && unpartitionedChildren.isEmpty()) {
-                    if (!hasMultipleSources(plannedChildren.stream().map(PlanWithProperties::getNode).toArray(PlanNode[]::new))) {
+                    if (countSources(plannedChildren.stream().map(PlanWithProperties::getNode).toArray(PlanNode[]::new)) == 0) {
                         // TODO: if all children have the same partitioning, pass this partitioning to the parent instead of "arbitraryPartition".
                         return new PlanWithProperties(replaceChildren(node, plannedChildren));
                     }
