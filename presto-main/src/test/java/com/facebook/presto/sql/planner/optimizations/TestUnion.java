@@ -21,6 +21,7 @@ import com.facebook.presto.sql.planner.plan.ExchangeNode;
 import com.facebook.presto.sql.planner.plan.JoinNode;
 import com.facebook.presto.sql.planner.plan.PlanNode;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -43,6 +44,23 @@ public class TestUnion
     public TestUnion(ImmutableMap<String, String> sessionProperties)
     {
         super(sessionProperties);
+    }
+
+    @Test
+    public void testSimpleUnion()
+    {
+        Plan plan = plan(
+                "SELECT suppkey FROM supplier UNION ALL SELECT nationkey FROM nation",
+                LogicalPlanner.Stage.OPTIMIZED_AND_VALIDATED,
+                false);
+
+        List<PlanNode> remotes = searchFrom(plan.getRoot())
+                .where(TestUnion::isRemoteExchange)
+                .findAll();
+
+        assertEquals(remotes.size(), 1, "There should be exactly one RemoteExchange");
+        assertEquals(((ExchangeNode) Iterables.getOnlyElement(remotes)).getType(), GATHER);
+        assertPlanIsFullyDistributed(plan);
     }
 
     @Test
