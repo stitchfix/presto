@@ -251,7 +251,10 @@ public class AddExchanges
         {
             Set<Symbol> partitioningRequirement = ImmutableSet.copyOf(node.getGroupingKeys());
 
-            PreferredProperties preferredProperties = PreferredProperties.any();
+            boolean preferSingleNode = (node.hasEmptyGroupingSet() && !node.hasNonEmptyGroupingSet());
+
+            PreferredProperties preferredProperties = preferSingleNode ? PreferredProperties.undistributed() : PreferredProperties.any();
+
             if (!node.getGroupingKeys().isEmpty()) {
                 preferredProperties = PreferredProperties.partitionedWithLocal(partitioningRequirement, grouped(node.getGroupingKeys()))
                         .mergeWithParent(context.getPreferredProperties());
@@ -264,7 +267,15 @@ public class AddExchanges
                 return rebaseAndDeriveProperties(node, child);
             }
 
-            if (node.hasEmptyGroupingSet() && !node.hasNonEmptyGroupingSet()) {
+            if (preferSingleNode) {
+                // For queries with only empty grouping sets like
+                //
+                // SELECT count(*) FROM lineitem;
+                //
+                // there is no need for distributed aggregation. Single node FINAL aggregation will suffice,
+                // since all input have to be aggregated into one line output.
+                //
+                // If aggregation must produce default output and it is not decomposable, we can not distribute it
                 child = withDerivedProperties(
                         gatheringExchange(idAllocator.getNextId(), REMOTE, child.getNode()),
                         child.getProperties());
