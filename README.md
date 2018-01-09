@@ -1,4 +1,4 @@
-# Stitch Fix internal Presto build
+# Stitch Fix customized Presto
 
 We are using the stable version 0.167.t.0.6 from Teradata Presto. We can keep track of the upstream update to build a new stable version.
 
