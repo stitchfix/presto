@@ -25,8 +25,8 @@ https://github.com/stitchfix/presto-query-logger
 See the README in https://github.com/stitchfix/pearlshell/tree/sf-presto-master_branch
 
 ## Deployment on EVE and further configuartion
-Master: https://eve.daylight.stitchfix.com/specs/presto-master
-Worker: https://eve.daylight.stitchfix.com/specs/presto-worker
+- Master: https://eve.daylight.stitchfix.com/specs/presto-master
+- Worker: https://eve.daylight.stitchfix.com/specs/presto-worker
 
 Notice these two EVE specs share the same AMI image, but differ in env configuaraton. 
 
