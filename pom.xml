@@ -27,6 +27,18 @@
         </license>
     </licenses>
 
+    <!-- Credentials go into settings.xml -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>artifactory-snapshots</id>
+            <url>http://artifactory.vertigo.stitchfix.com/artifactory/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>artifactory-releases</id>
+            <url>http://artifactory.vertigo.stitchfix.com/artifactory/releases</url>
+        </repository>
+    </distributionManagement>
+
     <scm>
         <connection>scm:git:git://github.com/facebook/presto.git</connection>
         <url>https://github.com/facebook/presto</url>
